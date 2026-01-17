@@ -49,20 +49,23 @@
                 <div>
                     <h3 class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Platform</h3>
                     <div class="space-y-1">
+
                         <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                           {{ request()->routeIs("dashboard") ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20" : "text-slate-400 hover:bg-white/5 hover:text-white" }}" href="{{ route("dashboard") }}">
-                            <svg class="h-5 w-5 {{ request()->routeIs("dashboard") ? "text-indigo-200" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           {{ request()->routeIs("dashboard") ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20" : "text-slate-400 hover:bg-white/5 hover:text-white" }}" href="{{ route("dashboard") }}">
+                            <svg class="h-5 w-5 {{ request()->routeIs("dashboard") ? "text-indigo-200" : "text-slate-500" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
                             Dashboard
                         </a>
 
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200" href="#">
-                            <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+           {{ request()->routeIs("projects.*") ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20" : "text-slate-400 hover:bg-white/5 hover:text-white" }}" href="{{ route("projects.index") }}">
+                            <svg class="h-5 w-5 {{ request()->routeIs("projects.*") ? "text-indigo-200" : "text-slate-500" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
                             Projects
                         </a>
+
                     </div>
                 </div>
 

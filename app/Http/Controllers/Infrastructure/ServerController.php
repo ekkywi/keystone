@@ -28,6 +28,7 @@ class ServerController extends Controller
             'user' => 'required|string|max:50',
             'ssh_port' => 'required|numeric|min:1|max:65535',
             'private_key' => 'required|string',
+            'description' => 'nullable|string|max:500',
         ]);
 
         Server::create([
@@ -37,7 +38,8 @@ class ServerController extends Controller
             'user' => $request->user,
             'ssh_port' => $request->ssh_port,
             'private_key' => $request->private_key,
-            'status' => 'active',
+            'description' => $request->description,
+            'is_active' => true,
         ]);
 
         return redirect()->route('servers.index')->with('success', 'Server registered successfully');
@@ -62,14 +64,16 @@ class ServerController extends Controller
             'name' => 'required|string|max:255',
             'ip_address' => 'required|ipv4',
             'user' => 'required|string|max:50',
-            'ssh_port' => 'required|numeric',
+            'ssh_port' => 'required|numeric|min:1|max:65535',
+            'description' => 'nullable|string|max:500',
         ]);
 
         $data = $request->only([
             'name',
             'ip_address',
             'user',
-            'ssh_port'
+            'ssh_port',
+            'description'
         ]);
 
         if ($request->filled('private_key')) {
@@ -85,6 +89,11 @@ class ServerController extends Controller
     {
         if ($server->user_id !== Auth::id()) {
             abort(403);
+        }
+
+        if ($server->services()->exists()) {
+            $count = $server->services()->count();
+            return back()->with('error', "Cannot disconnect this server. It is currently being used by {$count} active service(s). Please delete the services in your Projects first.");
         }
 
         $server->delete();

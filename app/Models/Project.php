@@ -2,28 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-class Server extends Model
+class Project extends Model
 {
     use HasFactory, HasUuids;
 
     protected $fillable = [
         'user_id',
         'name',
-        'ip_address',
-        'user',
-        'ssh_port',
-        'private_key',
         'description',
-        'is_active',
-    ];
-
-    protected $casts = [
-        'praivate_key' => 'encrypted',
-        'specs' => 'array'
+        'environtment',
     ];
 
     public function user()

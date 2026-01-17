@@ -20,29 +20,40 @@
     <div class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($servers as $server)
-                <div class="bg-white rounded-xl border border-slate-200 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:border-indigo-300 transition group p-6">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:border-indigo-300 transition group p-6 flex flex-col h-full">
+
+                    <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+                            <div class="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 01-2 2v4a2 2 0 012 2h14a2 2 0 012-2v-4a2 2 0 01-2-2m-2-4h.01M17 16h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-800">{{ $server->name }}</h3>
-                                <div class="flex items-center gap-2 text-xs text-slate-500 font-mono mt-0.5">
+                                <h3 class="font-bold text-slate-800 leading-tight">{{ $server->name }}</h3>
+                                <div class="flex items-center gap-2 text-xs text-slate-500 font-mono mt-1">
                                     <span>{{ $server->user }}@</span><span class="bg-slate-100 px-1 rounded">{{ $server->ip_address }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 shrink-0">
                             <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5"></span>
                             Active
                         </span>
                     </div>
 
-                    <div class="border-t border-slate-100 pt-4 mt-2 flex justify-between items-center">
+                    <div class="mt-2 mb-4 grow">
+                        @if ($server->description)
+                            <p class="text-sm text-slate-500 leading-relaxed line-clamp-2" title="{{ $server->description }}">
+                                {{ $server->description }}
+                            </p>
+                        @else
+                            <p class="text-sm text-slate-300 italic">No description provided.</p>
+                        @endif
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-4 mt-auto flex justify-between items-center">
                         <span class="text-xs text-slate-400 font-mono">SSH Port: {{ $server->ssh_port }}</span>
 
                         <div class="flex items-center gap-3">

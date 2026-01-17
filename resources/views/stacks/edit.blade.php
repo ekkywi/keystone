@@ -95,7 +95,8 @@
 
             <div class="flex items-center justify-end gap-3 pt-4">
                 <a class="px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-white rounded-lg transition" href="{{ route("stacks.index") }}">Cancel</a>
-                <button class="bg-slate-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" type="submit">
+
+                <button class="bg-slate-900 text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-900/20" onclick="confirmUpdate()" type="button">
                     Update Changes
                 </button>
             </div>
@@ -178,5 +179,37 @@
                 document.getElementById('emptyState').style.display = 'block';
             }
         });
+
+        function confirmUpdate() {
+            Swal.fire({
+                title: 'Update Master Stack?',
+                html: `
+            <div class="text-left text-sm text-slate-600">
+                <p class="mb-3">You are about to update a Stack Template. Please confirm:</p>
+                <ul class="list-disc pl-4 space-y-1 mb-3 text-amber-700">
+                    <li>Did you rename any <b>ENV Keys</b>?</li>
+                    <li>Did you remove any <b>Required Variables</b>?</li>
+                </ul>
+                <p>Changes may cause deployment failures for existing projects using this stack.</p>
+            </div>
+        `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0f172a', // Slate-900
+                cancelButtonColor: '#64748b', // Slate-500
+                confirmButtonText: 'Yes, I understand',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    popup: 'rounded-xl border border-slate-200 shadow-xl',
+                    title: 'text-slate-800 font-bold',
+                    htmlContainer: 'text-slate-600',
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika user yakin, baru kita submit form secara manual via JS
+                    document.getElementById('stackForm').submit();
+                }
+            })
+        }
     </script>
 @endpush

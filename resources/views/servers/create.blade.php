@@ -41,6 +41,11 @@
                     </div>
 
                     <div class="space-y-1">
+                        <label class="block text-sm font-medium text-slate-700">Description <span class="text-slate-400 font-normal">(Optional)</span></label>
+                        <textarea class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-2.5" name="description" placeholder="Brief details about this server's purpose..." rows="2"></textarea>
+                    </div>
+
+                    <div class="space-y-1">
                         <div class="flex justify-between">
                             <label class="block text-sm font-medium text-slate-700">SSH Private Key</label>
                             <span class="text-xs text-slate-400">Stored with AES-256 encryption</span>

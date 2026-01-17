@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servers', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('ip_address');
-            $table->string('user');
-            $table->integer('ssh_port');
-            $table->text('private_key');
             $table->text('description')->nullable();
-            $table->string('status')->default('unknown');
-            $table->boolean('is_active')->default(true);
+            $table->string('environtment')->default('development');
             $table->timestamps();
         });
     }
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('servers');
+        Schema::dropIfExists('projects');
     }
 };

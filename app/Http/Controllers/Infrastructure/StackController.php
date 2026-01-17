@@ -114,4 +114,25 @@ class StackController extends Controller
             return back()->with('error', 'Error updating stack: ' . $e->getMessage())->withInput();
         }
     }
+
+    public function destroy(Stack $stack)
+    {
+        try {
+            DB::transaction(function () use ($stack) {
+                $stack->variables()->delete();
+
+                $stack->delete();
+            });
+
+            return redirect()->route('stacks.index')->with('success', 'Master stack deleted successfully.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return back()->with('error', 'Cannot delete this stack because it is currently being used by one or more Projects. Please delete the services in the projects first.');
+            }
+
+            return back()->with('error', 'Database error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting stack: ' . $e->getMessage());
+        }
+    }
 }
