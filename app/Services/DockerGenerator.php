@@ -8,7 +8,7 @@ class DockerGenerator
 {
     public function generateComposeFile(ProjectService $service): string
     {
-        $rawYaml = $service->stack->docker_compose_file;
+        $rawYaml = $service->stack->raw_compose_template;
 
         $userVariables = $service->input_variables ?? [];
 
