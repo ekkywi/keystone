@@ -71,14 +71,11 @@
                                 </div>
 
                                 <div class="flex flex-col items-end gap-1">
-                                    {{-- Status Badge Utama (Running/Stopped) --}}
                                     <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
             {{ $service->status == "running" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-slate-700 border-slate-100" }}">
                                         {{ $service->status }}
                                     </span>
 
-                                    {{-- INDIKATOR "CHANGES PENDING" --}}
-                                    {{-- Logic: Jika waktu Edit (updated_at) lebih baru dari waktu Deploy (last_deployed_at) --}}
                                     @if ($service->last_deployed_at && $service->updated_at->gt($service->last_deployed_at))
                                         <span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse" title="Configuration changed. Click Redeploy to apply.">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +101,7 @@
 
                         <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
 
-                            <div class="flex gap-2">
+                            <div class="flex items-center gap-2">
                                 @if ($service->status !== "building")
                                     <form action="{{ route("services.deploy", $service) }}" class="deploy-service-form" method="POST">
                                         @csrf
@@ -126,6 +123,15 @@
                                             </button>
                                         @endif
                                     </form>
+                                @endif
+
+                                @if ($service->status !== "building")
+                                    <button class="text-xs font-bold text-slate-500 hover:text-indigo-600 transition flex items-center gap-1 mx-3" onclick="openLogsModal('{{ $service->name }}', '{{ route("services.logs", $service) }}')" title="View Container Logs" type="button">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                        </svg>
+                                        Logs
+                                    </button>
                                 @endif
 
                                 @if (in_array($service->status, ["running", "building"]))
@@ -248,6 +254,111 @@
                 });
             });
 
+        });
+    </script>
+
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden transition-opacity opacity-0 flex items-center justify-center p-4" id="logsModalBackdrop">
+        <div class="bg-[#1e1e1e] w-full max-w-5xl h-[80vh] rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-200" id="logsModalPanel">
+
+            {{-- Header Modal --}}
+            <div class="flex justify-between items-center px-4 py-3 bg-[#252526] border-b border-black/20">
+                <div class="flex items-center gap-3">
+                    <div class="flex gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    </div>
+                    <span class="font-mono text-sm font-bold text-slate-400 ml-2" id="logsTitle">Service Logs</span>
+                </div>
+                <button class="text-slate-500 hover:text-white transition" onclick="closeLogsModal()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Area Terminal Logs --}}
+            <div class="flex-1 p-4 overflow-auto bg-[#1e1e1e] font-mono text-xs leading-relaxed" id="logsContainer">
+                <pre class="text-slate-300 whitespace-pre-wrap break-all" id="logsContent"></pre>
+            </div>
+
+            {{-- Footer Status --}}
+            <div class="px-4 py-2 bg-[#007acc] text-white text-[10px] font-bold flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="animate-pulse w-2 h-2 rounded-full bg-white"></span>
+                    LIVE STREAMING (Polling 3s)
+                </div>
+                <span class="opacity-80" id="logsTimestamp">--:--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let logsInterval;
+        const modalBackdrop = document.getElementById('logsModalBackdrop');
+        const modalPanel = document.getElementById('logsModalPanel');
+        const logsContent = document.getElementById('logsContent');
+        const logsTitle = document.getElementById('logsTitle');
+        const logsTimestamp = document.getElementById('logsTimestamp');
+
+        function openLogsModal(name, url) {
+            // 1. Tampilkan Modal dengan Animasi
+            modalBackdrop.classList.remove('hidden');
+            // Sedikit delay biar transisi opacity jalan
+            setTimeout(() => {
+                modalBackdrop.classList.remove('opacity-0');
+                modalPanel.classList.remove('scale-95');
+            }, 10);
+
+            logsTitle.innerText = `root@keystone:~/services/${name} $ docker logs -f`;
+            logsContent.innerText = "Connecting to server...\nFetching latest logs...";
+
+            // 2. Fungsi Fetch Data
+            const fetchLogs = () => {
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            logsContent.innerText = data.logs || "No logs available yet (Container starting...).";
+                            logsTimestamp.innerText = "Last Update: " + new Date().toLocaleTimeString();
+
+                            // Auto scroll ke bawah (opsional, matikan jika mengganggu)
+                            // const container = document.getElementById('logsContainer');
+                            // container.scrollTop = container.scrollHeight;
+                        } else {
+                            logsContent.innerText = `[ERROR] Failed to fetch logs:\n${data.logs}`;
+                        }
+                    })
+                    .catch(err => {
+                        logsContent.innerText = `[CONNECTION ERROR] Could not reach Keystone server.\n${err}`;
+                    });
+            };
+
+            // 3. Panggil sekali langsung, lalu set interval
+            fetchLogs();
+            logsInterval = setInterval(fetchLogs, 3000); // Refresh setiap 3 detik
+        }
+
+        function closeLogsModal() {
+            // 1. Matikan Interval (PENTING biar gak membebani server)
+            if (logsInterval) clearInterval(logsInterval);
+
+            // 2. Animasi Tutup
+            modalBackdrop.classList.add('opacity-0');
+            modalPanel.classList.add('scale-95');
+
+            // 3. Sembunyikan div setelah animasi selesai
+            setTimeout(() => {
+                modalBackdrop.classList.add('hidden');
+                logsContent.innerText = ""; // Bersihkan text
+            }, 300);
+        }
+
+        // Tutup modal jika klik di luar area (backdrop)
+        modalBackdrop.addEventListener('click', function(e) {
+            if (e.target === modalBackdrop) {
+                closeLogsModal();
+            }
         });
     </script>
 @endpush

@@ -51,6 +51,7 @@ Route::middleware('auth')->group(function () {
         // Custom Actions
         Route::post('/services/{service}/deploy', [ServiceOperationController::class, 'deploy'])->name('services.deploy');
         Route::post('/services/{service}/stop', [ServiceOperationController::class, 'stop'])->name('services.stop');
+        Route::get('/services/{service}/logs', [ServiceOperationController::class, 'logs'])->name('services.logs');
     });
 
     Route::get('/test-ssh', function () {

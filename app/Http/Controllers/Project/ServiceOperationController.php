@@ -77,4 +77,36 @@ class ServiceOperationController extends Controller
             return back()->with('error', 'Stop Failed: ' . $e->getMessage());
         }
     }
+
+    public function logs(ProjectService $service)
+    {
+        if ($service->project->user_id !== Auth::id()) abort(403);
+
+        try {
+            $service->load('server');
+
+            if (!$service->server) {
+                return response()->json([
+                    'status' => 'error',
+                    'logs' => "CRITICAL ERROR: Server data missing. Server ID: " . ($service->server_id ?? 'NULL')
+                ]);
+            }
+
+            $remotePath = "/var/www/keystone/{$service->project->id}/{$service->id}";
+
+            $this->ssh->connect($service->server);
+
+            $output = $this->ssh->execute("cd {$remotePath} && docker compose logs --tail=100 2>&1");
+
+            return response()->json([
+                'status' => 'success',
+                'logs' => $output
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'logs' => 'System Error: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
