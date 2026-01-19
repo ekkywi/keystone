@@ -20,40 +20,59 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($projects as $project)
-                <a class="group block bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-500/10 transition duration-200 relative overflow-hidden" href="{{ route("projects.show", $project) }}">
+                {{-- 1. Wrapper Utama diubah jadi DIV (Bukan A) --}}
+                <div class="group bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-400 hover:shadow-md hover:shadow-indigo-500/10 transition duration-200 relative overflow-hidden flex flex-col">
 
-                    <div class="absolute top-0 inset-x-0 h-1 
-                        {{ $project->environment == "production" ? "bg-rose-500" : ($project->environment == "staging" ? "bg-amber-400" : "bg-emerald-400") }}">
-                    </div>
-
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="h-10 w-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                </svg>
-                            </div>
-
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
-                                {{ $project->environment == "production" ? "bg-rose-50 text-rose-700 border-rose-100" : ($project->environment == "staging" ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-emerald-50 text-emerald-700 border-emerald-100") }}">
-                                {{ $project->environment }}
-                            </span>
+                    {{-- 2. Link ke Detail Project hanya membungkus bagian atas --}}
+                    <a class="block flex-1" href="{{ route("projects.show", $project) }}">
+                        <div class="absolute top-0 inset-x-0 h-1 
+                            {{ $project->environment == "production" ? "bg-rose-500" : ($project->environment == "staging" ? "bg-amber-400" : "bg-emerald-400") }}">
                         </div>
 
-                        <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition">{{ $project->name }}</h3>
-                        <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed h-10">
-                            {{ $project->description ?? "No description provided." }}
-                        </p>
-                    </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="h-10 w-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                    </svg>
+                                </div>
+
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
+                                    {{ $project->environment == "production" ? "bg-rose-50 text-rose-700 border-rose-100" : ($project->environment == "staging" ? "bg-amber-50 text-amber-700 border-amber-100" : "bg-emerald-50 text-emerald-700 border-emerald-100") }}">
+                                    {{ $project->environment }}
+                                </span>
+                            </div>
+
+                            <h3 class="font-bold text-slate-800 text-lg mb-1 group-hover:text-indigo-600 transition">{{ $project->name }}</h3>
+                            <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed h-10">
+                                {{ $project->description ?? "No description provided." }}
+                            </p>
+                        </div>
+                    </a>
 
                     <div class="px-6 py-4 border-t border-slate-50 bg-slate-50/50 flex justify-between items-center text-xs text-slate-500">
                         <span class="flex items-center gap-1.5 font-medium">
                             <div class="w-2 h-2 rounded-full bg-slate-300"></div>
                             {{ $project->services_count }} Services
                         </span>
-                        <span class="font-mono">{{ $project->created_at->format("d M Y") }}</span>
+
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono">{{ $project->created_at->format("d M Y") }}</span>
+
+                            <div class="h-3 w-px bg-slate-300"></div>
+
+                            <form action="{{ route("projects.destroy", $project) }}" class="delete-project-form" method="POST">
+                                @csrf
+                                @method("DELETE")
+                                <button class="text-slate-400 hover:text-rose-600 transition p-1" title="Delete Project" type="submit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </a>
+                </div>
             @empty
                 <div class="col-span-full py-12 flex flex-col items-center justify-center text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
                     <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
@@ -71,6 +90,7 @@
         </div>
     </div>
 
+    {{-- MODAL TETAP SAMA SEPERTI SEBELUMNYA --}}
     <dialog class="m-auto rounded-2xl shadow-2xl p-0 w-full max-w-md backdrop:bg-slate-900/50 backdrop:backdrop-blur-sm open:animate-fade-in" id="createProjectModal">
         <div class="bg-white p-6">
             <div class="flex justify-between items-center mb-6">
@@ -114,7 +134,6 @@
 
 @push("styles")
     <style>
-        /* Animasi Modal Sederhana */
         dialog[open] {
             animation: slide-up 0.3s ease-out;
         }
@@ -131,4 +150,42 @@
             }
         }
     </style>
+@endpush
+
+@push("scripts")
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteForms = document.querySelectorAll('.delete-project-form');
+
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Delete Project?',
+                        text: "WARNING: This will delete ALL services, containers, and data inside this project!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e11d48',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Yes, DELETE Everything!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deleting...',
+                                text: 'Cleaning up servers and database.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 @endpush

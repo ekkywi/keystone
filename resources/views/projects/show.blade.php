@@ -70,15 +70,24 @@
                                     </div>
                                 </div>
 
-                                <span class="flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border
-                                    {{ $service->status == "running" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-slate-600 border-slate-100" }}">
-                                    @if ($service->status == "running")
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    @else
-                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                <div class="flex flex-col items-end gap-1">
+                                    {{-- Status Badge Utama (Running/Stopped) --}}
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
+            {{ $service->status == "running" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-slate-700 border-slate-100" }}">
+                                        {{ $service->status }}
+                                    </span>
+
+                                    {{-- INDIKATOR "CHANGES PENDING" --}}
+                                    {{-- Logic: Jika waktu Edit (updated_at) lebih baru dari waktu Deploy (last_deployed_at) --}}
+                                    @if ($service->last_deployed_at && $service->updated_at->gt($service->last_deployed_at))
+                                        <span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse" title="Configuration changed. Click Redeploy to apply.">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                            </svg>
+                                            Changes Pending
+                                        </span>
                                     @endif
-                                    {{ $service->status }}
-                                </span>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-y-2 text-xs text-slate-500 mt-4 border-t border-slate-50 pt-4">
@@ -96,21 +105,31 @@
                         <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
 
                             <div class="flex gap-2">
-                                @if (in_array($service->status, ["stopped", "failed"]))
-                                    <form action="{{ route("services.deploy", $service) }}" method="POST">
+                                @if ($service->status !== "building")
+                                    <form action="{{ route("services.deploy", $service) }}" class="deploy-service-form" method="POST">
                                         @csrf
-                                        <button class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1" type="submit">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                                <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                            </svg>
-                                            Deploy
-                                        </button>
+
+                                        @if ($service->status == "running")
+                                            <button class="text-xs font-bold text-amber-600 hover:text-amber-800 transition flex items-center gap-1" title="Apply new configuration" type="submit">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                                </svg>
+                                                Redeploy
+                                            </button>
+                                        @else
+                                            <button class="text-xs font-bold text-emerald-600 hover:text-emerald-800 transition flex items-center gap-1" type="submit">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                                    <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                                </svg>
+                                                Start
+                                            </button>
+                                        @endif
                                     </form>
                                 @endif
 
                                 @if (in_array($service->status, ["running", "building"]))
-                                    <form action="{{ route("services.stop", $service) }}" method="POST">
+                                    <form action="{{ route("services.stop", $service) }}" class="stop-service-form" method="POST">
                                         @csrf
                                         <button class="text-xs font-bold text-rose-600 hover:text-rose-800 transition flex items-center gap-1" type="submit">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,6 +140,27 @@
                                         </button>
                                     </form>
                                 @endif
+
+                                <div class="h-3 w-px bg-slate-300 mx-1"></div>
+
+                                <div class="flex items-center gap-1">
+                                    <a class="text-slate-400 hover:text-indigo-600 transition p-1" href="{{ route("services.edit", $service) }}" title="Edit Configuration">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                        </svg>
+                                    </a>
+
+                                    <form action="{{ route("services.destroy", $service) }}" class="inline-flex delete-service-form" method="POST">
+                                        @csrf
+                                        @method("DELETE")
+                                        <button class="text-slate-400 hover:text-rose-600 transition" title="Delete Service" type="submit">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+
                             </div>
 
                             <span class="text-[10px] text-slate-400 font-mono">{{ $service->updated_at->diffForHumans() }}</span>
@@ -132,3 +172,82 @@
 
     </div>
 @endsection
+
+@push("scripts")
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const deployForms = document.querySelectorAll('.deploy-service-form');
+            deployForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Ready to Deploy?',
+                        text: "Keystone will connect to the server and start the container.",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#10b981',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Yes, Deploy it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Deploying...',
+                                text: 'Please wait while we set up your container.',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            this.submit();
+                        }
+                    });
+                });
+            });
+
+            const stopForms = document.querySelectorAll('.stop-service-form');
+            stopForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Stop Service?',
+                        text: "The application will stop running and become inaccessible.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#f59e0b',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Yes, Stop it',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+
+            const deleteForms = document.querySelectorAll('.delete-service-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Delete Service?',
+                        text: "WARNING: This will remove the container and DELETE DATA permanently!",
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e11d48',
+                        cancelButtonColor: '#64748b',
+                        confirmButtonText: 'Yes, DELETE it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+@endpush

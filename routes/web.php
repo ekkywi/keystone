@@ -38,15 +38,20 @@ Route::middleware('auth')->group(function () {
     // Stacks
     Route::resource('stacks', StackController::class);
 
-    // Projects
-    Route::resource('projects', ProjectController::class);
+    Route::middleware(['auth'])->group(function () {
 
-    // Nested Route Service
-    Route::resource('projects.services', ProjectServiceController::class)->except('index', 'show');
+        // Resource Project
+        Route::resource('projects', ProjectController::class);
 
-    // Action route for Deploy/Stop
-    Route::post('/service/{service}/deploy', [ServiceOperationController::class, 'deploy'])->name('services.deploy');
-    Route::post('/service/{service}/stop', [ServiceOperationController::class, 'stop'])->name('services.stop');
+        // Resource Services (Shallow)
+        Route::resource('projects.services', ProjectServiceController::class)
+            ->only(['create', 'store', 'destroy', 'edit', 'update'])
+            ->shallow();
+
+        // Custom Actions
+        Route::post('/services/{service}/deploy', [ServiceOperationController::class, 'deploy'])->name('services.deploy');
+        Route::post('/services/{service}/stop', [ServiceOperationController::class, 'stop'])->name('services.stop');
+    });
 
     Route::get('/test-ssh', function () {
         $server = Server::first();

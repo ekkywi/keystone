@@ -19,6 +19,10 @@ class StackVariable extends Model
         'is_required'
     ];
 
+    protected $casts = [
+        'is_required' => 'boolean',
+    ];
+
     public function stack()
     {
         return $this->belongsTo(Stack::class);

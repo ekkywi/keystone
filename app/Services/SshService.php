@@ -55,4 +55,12 @@ class SshService
     {
         $this->execute("mkdir -p {$path}");
     }
+
+    public function removeDirectory($path)
+    {
+        if ($this->ssh) {
+            if ($path == '/' || empty($path)) return;
+            $this->execute("rm -rf {$path}");
+        }
+    }
 }

@@ -18,7 +18,6 @@ class ServiceOperationController extends Controller
     public function __construct(SshService $ssh, DockerGenerator $generator)
     {
         $this->ssh = $ssh;
-
         $this->generator = $generator;
     }
 
@@ -31,32 +30,30 @@ class ServiceOperationController extends Controller
         try {
             $composeContent = $this->generator->generateComposeFile($service);
 
-            // --- DEBUGGING START ---
             if (empty($composeContent)) {
                 throw new \Exception("YAML Content is EMPTY! Please check the Stack configuration.");
             }
-            Log::info("Content to be uploaded for {$service->name}: \n" . $composeContent);
-            // --- DEBUGGING END ---
 
-            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '-', strtolower($service->name)));
-
-            $remotePath = "/var/www/keystone/{$service->project->id}/{$safeName}";
+            $remotePath = "/var/www/keystone/{$service->project->id}/{$service->id}";
 
             $this->ssh->connect($service->server);
 
             $this->ssh->ensureDirectoryExists($remotePath);
-
             $this->ssh->uploadFile("{$remotePath}/docker-compose.yml", $composeContent);
 
             $output = $this->ssh->execute("cd {$remotePath} && docker compose up -d --remove-orphans");
 
             Log::info("Deployment Output for {$service->name}: " . $output);
 
-            $service->update(['status' => 'running']);
+            $service->update([
+                'status' => 'running',
+                'last_deployed_at' => now(),
+            ]);
 
             return back()->with('success', 'Deployment successful! Container is running.');
         } catch (\Exception $e) {
             $service->update(['status' => 'failed']);
+            Log::error("Deploy Failed: " . $e->getMessage());
 
             return back()->with('error', 'Deployment Failed: ' . $e->getMessage());
         }
@@ -67,11 +64,10 @@ class ServiceOperationController extends Controller
         if ($service->project->user_id !== Auth::id()) abort(403);
 
         try {
-            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '-', strtolower($service->name)));
-
-            $remotePath = "/var/www/keystone/{$service->project->id}/{$safeName}";
+            $remotePath = "/var/www/keystone/{$service->project->id}/{$service->id}";
 
             $this->ssh->connect($service->server);
+
             $this->ssh->execute("cd {$remotePath} && docker compose down");
 
             $service->update(['status' => 'stopped']);

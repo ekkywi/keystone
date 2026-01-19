@@ -17,11 +17,14 @@ class ProjectService extends Model
         'name',
         'input_variables',
         'status',
-        'public_port'
+        'public_port',
+        'last_deployed_at'
     ];
 
     protected $casts = [
         'input_variables' => 'array',
+        'public_port' => 'integer',
+        'last_deployed_at' => 'datetime',
     ];
 
     public function project()
