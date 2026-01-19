@@ -4,12 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Server;
 use App\Services\SshService;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Infrastructure\ServerController;
 use App\Http\Controllers\Infrastructure\StackController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Project\ProjectServiceController;
 use App\Http\Controllers\Project\ServiceOperationController;
+use App\Http\Controllers\Help\HelpController;
 
 // --- GUEST ROUTES ---
 Route::get('/', function () {
@@ -24,9 +26,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Users
     Route::resource('users', UserController::class);
@@ -54,6 +54,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/services/{service}/logs', [ServiceOperationController::class, 'logs'])->name('services.logs');
         Route::post('/services/{service}/refresh-status', [ServiceOperationController::class, 'refreshStatus'])->name('services.refresh-status');
     });
+
+    // Help
+    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
 
     Route::get('/test-ssh', function () {
         $server = Server::first();

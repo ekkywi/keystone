@@ -26,8 +26,10 @@
 
     <div class="flex h-screen overflow-hidden">
 
+        {{-- SIDEBAR --}}
         <aside class="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 transition-all duration-300 border-r border-slate-800">
 
+            {{-- LOGO --}}
             <div class="h-16 flex items-center px-6 bg-slate-950/50 border-b border-white/5 relative">
                 <div class="absolute top-0 left-0 w-20 h-full bg-indigo-500/10 blur-xl"></div>
 
@@ -44,8 +46,10 @@
                 </div>
             </div>
 
+            {{-- NAVIGATION LINKS --}}
             <nav class="flex-1 px-3 py-6 space-y-8 overflow-y-auto no-scrollbar">
 
+                {{-- GROUP: PLATFORM --}}
                 <div>
                     <h3 class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Platform</h3>
                     <div class="space-y-1">
@@ -69,6 +73,7 @@
                     </div>
                 </div>
 
+                {{-- GROUP: INFRASTRUCTURE --}}
                 <div>
                     <h3 class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Infrastructure</h3>
                     <div class="space-y-1">
@@ -92,6 +97,7 @@
                     </div>
                 </div>
 
+                {{-- GROUP: SYSTEM --}}
                 <div>
                     <h3 class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">System</h3>
                     <div class="space-y-1">
@@ -113,8 +119,23 @@
                     </div>
                 </div>
 
+                {{-- GROUP: SUPPORT (BARU DITAMBAHKAN) --}}
+                <div>
+                    <h3 class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Support</h3>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                           {{ request()->routeIs("help.*") ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20" : "text-slate-400 hover:bg-white/5 hover:text-white" }}" href="{{ route("help.index") }}">
+                            <svg class="h-5 w-5 {{ request()->routeIs("help.*") ? "text-indigo-200" : "text-slate-500" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </svg>
+                            Help & Guides
+                        </a>
+                    </div>
+                </div>
+
             </nav>
 
+            {{-- USER PROFILE BOTTOM --}}
             <div class="p-4 border-t border-slate-800 bg-slate-950/50">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-slate-700 to-slate-600 ring-1 ring-white/10 flex items-center justify-center text-white font-bold text-sm">
@@ -138,6 +159,7 @@
             </div>
         </aside>
 
+        {{-- MAIN CONTENT AREA --}}
         <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50">
             <header class="h-16 flex items-center px-8 bg-white border-b border-slate-200 flex-shrink-0 z-10 relative">
                 @hasSection("header")
@@ -166,6 +188,7 @@
         </main>
     </div>
 
+    {{-- SCRIPTS & TOAST --}}
     <script>
         const Toast = Swal.mixin({
             toast: true,
