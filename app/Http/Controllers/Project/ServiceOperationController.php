@@ -109,4 +109,50 @@ class ServiceOperationController extends Controller
             ]);
         }
     }
+
+    public function refreshStatus(ProjectService $service)
+    {
+        if ($service->project->user_id !== Auth::id()) abort(403);
+
+        try {
+            $service->load('server');
+
+            if (!$service->server) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Server not found.'
+                ], 404);
+            }
+
+            $remotePath = "/var/www/keystone/{$service->project->id}/{$service->id}";
+
+            $this->ssh->connect($service->server);
+
+            try {
+                $output = $this->ssh->execute("cd {$remotePath} && docker compose ps --format \"{{.State}}\"");
+            } catch (\Exception $e) {
+                $service->update(['status' => 'stopped']);
+                return response()->json([
+                    'status' => 'success',
+                    'new_status' => 'stopped',
+                    'message' => 'Service not found on server (marked as stopped).'
+                ]);
+            }
+
+            $newStatus = str_contains(strtolower($output), 'running') ? 'running' : 'stopped';
+
+            $service->update(['status' => $newStatus]);
+
+            return response()->json([
+                'status' => 'success',
+                'new_status' => $newStatus,
+                'message' => 'Status updated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

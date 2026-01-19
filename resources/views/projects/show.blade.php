@@ -70,11 +70,23 @@
                                     </div>
                                 </div>
 
+                                {{-- BAGIAN STATUS & REFRESH (UPDATED) --}}
                                 <div class="flex flex-col items-end gap-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
-            {{ $service->status == "running" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-slate-700 border-slate-100" }}">
-                                        {{ $service->status }}
-                                    </span>
+
+                                    <div class="flex items-center gap-2">
+                                        {{-- TOMBOL REFRESH --}}
+                                        <button class="text-slate-400 hover:text-indigo-600 transition p-1 rounded-full hover:bg-slate-100" id="refresh-btn-{{ $service->id }}" onclick="refreshServiceStatus('{{ $service->id }}', '{{ route("services.refresh-status", $service) }}')" title="Check Realtime Status from Server">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                            </svg>
+                                        </button>
+
+                                        {{-- STATUS BADGE --}}
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border 
+                                            {{ $service->status == "running" ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-slate-700 border-slate-100" }}" id="status-badge-{{ $service->id }}">
+                                            {{ $service->status }}
+                                        </span>
+                                    </div>
 
                                     @if ($service->last_deployed_at && $service->updated_at->gt($service->last_deployed_at))
                                         <span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded flex items-center gap-1 animate-pulse" title="Configuration changed. Click Redeploy to apply.">
@@ -85,6 +97,8 @@
                                         </span>
                                     @endif
                                 </div>
+                                {{-- END BAGIAN STATUS --}}
+
                             </div>
 
                             <div class="grid grid-cols-2 gap-y-2 text-xs text-slate-500 mt-4 border-t border-slate-50 pt-4">
@@ -99,6 +113,7 @@
                             </div>
                         </div>
 
+                        {{-- FOOTER CARD --}}
                         <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
 
                             <div class="flex items-center gap-2">
@@ -183,6 +198,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            // ... SweetAlert Deployment, Stop, Delete (sama seperti sebelumnya) ...
             const deployForms = document.querySelectorAll('.deploy-service-form');
             deployForms.forEach(form => {
                 form.addEventListener('submit', function(e) {
@@ -257,10 +273,9 @@
         });
     </script>
 
+    {{-- MODAL LOGS --}}
     <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden transition-opacity opacity-0 flex items-center justify-center p-4" id="logsModalBackdrop">
         <div class="bg-[#1e1e1e] w-full max-w-5xl h-[80vh] rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-200" id="logsModalPanel">
-
-            {{-- Header Modal --}}
             <div class="flex justify-between items-center px-4 py-3 bg-[#252526] border-b border-black/20">
                 <div class="flex items-center gap-3">
                     <div class="flex gap-1.5">
@@ -276,13 +291,9 @@
                     </svg>
                 </button>
             </div>
-
-            {{-- Area Terminal Logs --}}
             <div class="flex-1 p-4 overflow-auto bg-[#1e1e1e] font-mono text-xs leading-relaxed" id="logsContainer">
                 <pre class="text-slate-300 whitespace-pre-wrap break-all" id="logsContent"></pre>
             </div>
-
-            {{-- Footer Status --}}
             <div class="px-4 py-2 bg-[#007acc] text-white text-[10px] font-bold flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <span class="animate-pulse w-2 h-2 rounded-full bg-white"></span>
@@ -293,7 +304,9 @@
         </div>
     </div>
 
+    {{-- SCRIPT: LOGS & STATUS REFRESH --}}
     <script>
+        // --- LOGS LOGIC ---
         let logsInterval;
         const modalBackdrop = document.getElementById('logsModalBackdrop');
         const modalPanel = document.getElementById('logsModalPanel');
@@ -302,9 +315,7 @@
         const logsTimestamp = document.getElementById('logsTimestamp');
 
         function openLogsModal(name, url) {
-            // 1. Tampilkan Modal dengan Animasi
             modalBackdrop.classList.remove('hidden');
-            // Sedikit delay biar transisi opacity jalan
             setTimeout(() => {
                 modalBackdrop.classList.remove('opacity-0');
                 modalPanel.classList.remove('scale-95');
@@ -313,7 +324,6 @@
             logsTitle.innerText = `root@keystone:~/services/${name} $ docker logs -f`;
             logsContent.innerText = "Connecting to server...\nFetching latest logs...";
 
-            // 2. Fungsi Fetch Data
             const fetchLogs = () => {
                 fetch(url)
                     .then(res => res.json())
@@ -321,10 +331,6 @@
                         if (data.status === 'success') {
                             logsContent.innerText = data.logs || "No logs available yet (Container starting...).";
                             logsTimestamp.innerText = "Last Update: " + new Date().toLocaleTimeString();
-
-                            // Auto scroll ke bawah (opsional, matikan jika mengganggu)
-                            // const container = document.getElementById('logsContainer');
-                            // container.scrollTop = container.scrollHeight;
                         } else {
                             logsContent.innerText = `[ERROR] Failed to fetch logs:\n${data.logs}`;
                         }
@@ -334,31 +340,79 @@
                     });
             };
 
-            // 3. Panggil sekali langsung, lalu set interval
             fetchLogs();
-            logsInterval = setInterval(fetchLogs, 3000); // Refresh setiap 3 detik
+            logsInterval = setInterval(fetchLogs, 3000);
         }
 
         function closeLogsModal() {
-            // 1. Matikan Interval (PENTING biar gak membebani server)
             if (logsInterval) clearInterval(logsInterval);
-
-            // 2. Animasi Tutup
             modalBackdrop.classList.add('opacity-0');
             modalPanel.classList.add('scale-95');
-
-            // 3. Sembunyikan div setelah animasi selesai
             setTimeout(() => {
                 modalBackdrop.classList.add('hidden');
-                logsContent.innerText = ""; // Bersihkan text
+                logsContent.innerText = "";
             }, 300);
         }
 
-        // Tutup modal jika klik di luar area (backdrop)
         modalBackdrop.addEventListener('click', function(e) {
             if (e.target === modalBackdrop) {
                 closeLogsModal();
             }
         });
+
+        // --- NEW: REFRESH STATUS LOGIC ---
+        function refreshServiceStatus(serviceId, url) {
+            const btn = document.getElementById(`refresh-btn-${serviceId}`);
+            const badge = document.getElementById(`status-badge-${serviceId}`);
+            const icon = btn.querySelector('svg');
+
+            // 1. Animasi Loading
+            icon.classList.add('animate-spin');
+            btn.disabled = true;
+
+            // 2. Fetch ke Server
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // 3. Update Text & Warna Badge
+                        badge.innerText = data.new_status;
+
+                        if (data.new_status === 'running') {
+                            badge.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border transition-colors duration-300 bg-emerald-50 text-emerald-700 border-emerald-100";
+                        } else {
+                            badge.className = "text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border transition-colors duration-300 bg-slate-50 text-slate-700 border-slate-100";
+                        }
+
+                        // Toast
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Status synced: ' + data.new_status
+                        });
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    Swal.fire('Error', 'Connection failed', 'error');
+                })
+                .finally(() => {
+                    // 5. Matikan Animasi
+                    icon.classList.remove('animate-spin');
+                    btn.disabled = false;
+                });
+        }
     </script>
 @endpush
