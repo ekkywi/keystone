@@ -55,38 +55,68 @@ class ProjectController extends Controller
     {
         if ($project->user_id !== Auth::id()) abort(403);
 
-        $servers = $project->services->pluck('server')->unique('id');
+        $project->load(['services.server']);
 
-        foreach ($project->services as $service) {
-            try {
-                $remotePath = "/var/www/keystone/{$project->id}/{$service->id}";
+        $userServers = \App\Models\Server::where('user_id', Auth::id())->get();
 
-                $ssh->connect($service->server);
-                $ssh->execute("cd {$remotePath} && docker compose down -v");
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning("Gagal stop service {$service->name}: " . $e->getMessage());
+        if ($project->services->count() > 0) {
+            $servicesByServer = $project->services->groupBy('server_id');
+
+            foreach ($servicesByServer as $serverId => $services) {
+                $server = $services->first()->server;
+                $this->cleanupServer($server, $project, $services, $ssh);
             }
-        }
+        } else {
+            Log::info("Project {$project->id} tidak memiliki service. Melakukan scanning ke semua server user.");
 
-        foreach ($servers as $server) {
-            try {
-                $ssh->connect($server);
+            foreach ($userServers as $server) {
+                try {
+                    $ssh->connect($server);
+                    $projectPath = "/var/www/keystone/{$project->id}";
 
-                $projectPath = "/var/www/keystone/{$project->id}";
+                    $check = $ssh->execute("if [ -d \"{$projectPath}\" ]; then echo 'FOUND'; fi");
 
-                if (empty($project->id) || strlen($projectPath) < 20) {
-                    \Illuminate\Support\Facades\Log::error("Safety Block: Mencoba menghapus path yang mencurigakan: {$projectPath}");
-                    continue;
+                    if (trim($check) === 'FOUND') {
+                        Log::info("Folder 'nyangkut' ditemukan di server {$server->name}. Menghapus...");
+                        $this->cleanupServer($server, $project, collect([]), $ssh);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning("Gagal scan server {$server->name}: " . $e->getMessage());
                 }
-
-                $ssh->removeDirectory($projectPath);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning("Gagal hapus folder project di server {$server->name}: " . $e->getMessage());
             }
         }
 
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', 'Project and server files deleted successfully.');
+        return redirect()->route('projects.index')
+            ->with('success', 'Project deleted and resources cleaned up.');
+    }
+
+    private function cleanupServer($server, $project, $services, SshService $ssh)
+    {
+        try {
+            $ssh->connect($server);
+
+            foreach ($services as $service) {
+                try {
+                    $servicePath = "/var/www/keystone/{$project->id}/{$service->id}";
+                    $ssh->execute("if [ -d \"$servicePath\" ]; then cd {$servicePath} && docker compose down -v --remove-orphans; fi");
+                } catch (\Exception $e) {
+                    Log::warning("Gagal stop service {$service->name}: " . $e->getMessage());
+                }
+            }
+
+            $networkName = "keystone-p{$project->id}-net";
+            $ssh->execute("docker network rm {$networkName} || true");
+
+            $projectPath = "/var/www/keystone/{$project->id}";
+
+            if (!empty($project->id) && strlen($projectPath) > 20) {
+                $ssh->execute("rm -rf {$projectPath}");
+                Log::info("Deleted project path on {$server->name}: {$projectPath}");
+            }
+        } catch (\Exception $e) {
+            Log::error("Cleanup error on server {$server->name}: " . $e->getMessage());
+        }
     }
 }
