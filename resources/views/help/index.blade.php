@@ -1,275 +1,313 @@
-@extends("layouts.app")
+@extends('layouts.app')
 
-@section("header")
+@section('title', 'Documentation')
+
+@section('header')
     <div class="flex justify-between items-center h-full">
         <div class="flex items-center gap-3">
-            <h2 class="font-bold text-lg text-slate-800">
-                Help Center
-            </h2>
-            <span class="text-slate-300 text-xl font-light">/</span>
-            <p class="text-sm text-slate-500 font-medium">
-                Guides & Documentation
-            </p>
+            <h2 class="font-bold text-lg text-slate-800">Help Center</h2>
+            <div class="h-6 w-px bg-slate-200 mx-2"></div>
+            <p class="text-sm text-slate-500 font-medium">Documentation & Guides</p>
         </div>
     </div>
 @endsection
 
-@section("content")
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 pb-12">
+@section('content')
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 pb-12 relative">
 
-        {{-- SIDEBAR MENU (Sticky) --}}
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sticky top-6">
-                <h3 class="font-bold text-slate-900 mb-4 px-2">Table of Contents</h3>
-                <nav class="space-y-1">
-                    <a class="block px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition flex items-center gap-2" href="#servers">
-                        <span class="bg-indigo-100 text-indigo-600 w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold">1</span>
-                        Server Management
+        {{-- SIDEBAR NAVIGATION (Sticky) --}}
+        <div class="lg:col-span-1 hidden lg:block">
+            <div class="sticky top-6 space-y-8">
+                
+                {{-- Table of Contents --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                    <h3 class="font-bold text-slate-900 text-xs uppercase tracking-widest mb-4 px-2">Table of Contents</h3>
+                    <nav class="space-y-1">
+                        <a href="#servers" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-indigo-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-bold group-hover:bg-indigo-600 group-hover:text-white transition">1</span>
+                            Server & SSH
+                        </a>
+                        <a href="#projects" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-rose-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-rose-50 text-rose-600 text-[10px] font-bold group-hover:bg-rose-600 group-hover:text-white transition">2</span>
+                            Projects
+                        </a>
+                        <a href="#stacks" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-amber-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-amber-50 text-amber-600 text-[10px] font-bold group-hover:bg-amber-600 group-hover:text-white transition">3</span>
+                            Stack Templates
+                        </a>
+                        <a href="#services" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-emerald-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-bold group-hover:bg-emerald-600 group-hover:text-white transition">4</span>
+                            Services & Deploy
+                        </a>
+                        <a href="#tools" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-blue-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold group-hover:bg-blue-600 group-hover:text-white transition">5</span>
+                            Console & Logs
+                        </a>
+                        <a href="#users" class="group flex items-center gap-3 px-3 py-2 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 hover:text-violet-600 transition">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-lg bg-violet-50 text-violet-600 text-[10px] font-bold group-hover:bg-violet-600 group-hover:text-white transition">6</span>
+                            Team Roles
+                        </a>
+                    </nav>
+                </div>
+
+                {{-- Quick Links --}}
+                <div class="bg-slate-900 rounded-2xl p-5 text-white shadow-lg">
+                    <h4 class="font-bold text-sm mb-2">Need Support?</h4>
+                    <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                        If you encounter issues not covered here, please contact the system administrator.
+                    </p>
+                    <a href="mailto:support@keystone.id" class="flex items-center justify-center gap-2 w-full bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl py-2 text-xs font-bold transition">
+                        Contact Support
                     </a>
-                    <a class="block px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition flex items-center gap-2" href="#projects">
-                        <span class="bg-rose-100 text-rose-600 w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold">2</span>
-                        Projects & Environments
-                    </a>
-                    <a class="block px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition flex items-center gap-2" href="#services">
-                        <span class="bg-emerald-100 text-emerald-600 w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold">3</span>
-                        Deploying Services
-                    </a>
-                    <a class="block px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition flex items-center gap-2" href="#monitoring">
-                        <span class="bg-amber-100 text-amber-600 w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold">4</span>
-                        Monitoring & Logs
-                    </a>
-                </nav>
+                </div>
             </div>
         </div>
 
         {{-- MAIN CONTENT --}}
-        <div class="lg:col-span-3 space-y-8">
+        <div class="lg:col-span-3 space-y-12">
 
-            {{-- SECTION 1: SERVERS --}}
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 scroll-mt-24" id="servers">
+            {{-- 1. SERVER MANAGEMENT --}}
+            <section id="servers" class="scroll-mt-24">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="h-10 w-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
+                    <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-900">1. Server Management</h2>
+                    <h2 class="text-xl font-bold text-slate-800">1. Server Management</h2>
                 </div>
 
-                {{-- INFOGRAFIS 1: CONNECTION FLOW --}}
-                <div class="bg-slate-50 rounded-xl border border-slate-200 p-6 mb-6">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center mb-4">Connection Workflow</h4>
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        {{-- Step A --}}
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm mb-2 text-indigo-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                </svg>
-                            </div>
-                            <span class="text-xs font-bold text-slate-700">1. Add Server</span>
-                            <span class="text-[10px] text-slate-500">Input IP Address</span>
-                        </div>
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div class="prose prose-sm max-w-none text-slate-600 mb-6">
+                        <p>Keystone manages your infrastructure by connecting to your VPS via SSH. Before deploying any application, you must connect at least one server.</p>
+                    </div>
 
-                        {{-- Arrow --}}
-                        <div class="flex-1 h-px bg-slate-300 w-full md:w-auto relative">
-                            <div class="absolute inset-0 flex items-center justify-center -top-2">
-                                <span class="bg-slate-50 px-2 text-[10px] text-slate-400">Generate Key</span>
-                            </div>
+                    {{-- DIAGRAM: Connection Flow --}}
+                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-5">
+                            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>
                         </div>
-
-                        {{-- Step B --}}
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm mb-2 text-rose-500">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.536 19.464a.5.5 0 01-.496.075l-.418-.2a.5.5 0 01-.253-.296l-.375-1.75a.5.5 0 00-.286-.34l-2.022-.8a.5.5 0 01-.288-.475V15h.5a.5.5 0 00.447-.276l.662-1.325a.5.5 0 00-.223-.67l-.556-.278A5.986 5.986 0 0115 7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                </svg>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Connection Workflow</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                <span class="absolute -top-3 -left-3 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white">1</span>
+                                <h5 class="font-bold text-slate-800 text-sm mb-1">Add Server</h5>
+                                <p class="text-xs text-slate-500">Input IP, User (root), and Port. Keystone generates a unique SSH Keypair.</p>
                             </div>
-                            <span class="text-xs font-bold text-slate-700">2. Copy SSH Key</span>
-                            <span class="text-[10px] text-slate-500">Keystone Public Key</span>
-                        </div>
-
-                        {{-- Arrow --}}
-                        <div class="flex-1 h-px bg-slate-300 w-full md:w-auto relative">
-                            <div class="absolute inset-0 flex items-center justify-center -top-2">
-                                <span class="bg-slate-50 px-2 text-[10px] text-slate-400">Paste to VPS</span>
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                <span class="absolute -top-3 -left-3 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white">2</span>
+                                <h5 class="font-bold text-slate-800 text-sm mb-1">Install Key</h5>
+                                <p class="text-xs text-slate-500">Copy the <strong>Public Key</strong> shown and paste it into <code class="bg-slate-100 px-1 rounded">~/.ssh/authorized_keys</code> on your VPS.</p>
                             </div>
-                        </div>
-
-                        {{-- Step C --}}
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm mb-2 text-emerald-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                </svg>
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                <span class="absolute -top-3 -left-3 w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white">3</span>
+                                <h5 class="font-bold text-slate-800 text-sm mb-1">Test Connection</h5>
+                                <p class="text-xs text-slate-500">Click <strong>"Test Connection"</strong>. If successful, you can check Uptime & Disk Usage.</p>
                             </div>
-                            <span class="text-xs font-bold text-slate-700">3. Connected</span>
-                            <span class="text-[10px] text-slate-500">Ready to Deploy</span>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="prose prose-slate text-sm max-w-none text-slate-600">
-                    <p>Sebelum melakukan deployment, Anda harus menghubungkan VPS (Virtual Private Server) Anda ke Keystone.</p>
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>OS: Ubuntu 20.04 LTS atau 22.04 LTS (Direkomendasikan).</li>
-                        <li>Fresh Install (Belum terinstall web server lain).</li>
-                        <li>Memiliki akses <strong>Root</strong> dan terinstall <strong>Docker</strong>.</li>
-                    </ul>
-                </div>
-            </div>
-
-            {{-- SECTION 2: PROJECTS --}}
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 scroll-mt-24" id="projects">
+            {{-- 2. PROJECTS --}}
+            <section id="projects" class="scroll-mt-24">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="h-10 w-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
+                    <div class="h-10 w-10 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2 2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-900">2. Projects & Environments</h2>
+                    <h2 class="text-xl font-bold text-slate-800">2. Projects & Environments</h2>
                 </div>
 
-                {{-- INFOGRAFIS 2: ENVIRONMENTS --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div class="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4 flex items-start gap-4 hover:shadow-md transition">
-                        <div class="bg-white p-2 rounded-lg shadow-sm text-emerald-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                            </svg>
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <p class="text-sm text-slate-600 mb-4">Projects categorize your applications. Each project is bound to a specific environment lifecycle.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-200 text-emerald-800 mb-2">DEV</span>
+                            <h4 class="font-bold text-emerald-900 text-sm">Development</h4>
+                            <p class="text-xs text-emerald-700 mt-1">For rapid prototyping and internal testing.</p>
                         </div>
+                        <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-amber-200 text-amber-800 mb-2">STAGING</span>
+                            <h4 class="font-bold text-amber-900 text-sm">Staging</h4>
+                            <p class="text-xs text-amber-700 mt-1">Pre-production environment for QA.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-rose-50 border border-rose-100">
+                            <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-rose-200 text-rose-800 mb-2">PROD</span>
+                            <h4 class="font-bold text-rose-900 text-sm">Production</h4>
+                            <p class="text-xs text-rose-700 mt-1">Live environment for end-users.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- 3. STACK TEMPLATES --}}
+            <section id="stacks" class="scroll-mt-24">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-10 w-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">3. Stack Templates</h2>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    <div class="flex gap-4">
+                        <div class="w-1 bg-amber-500 rounded-full"></div>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            <strong>Stacks</strong> are reusable blueprints for services. Instead of writing Docker Compose files from scratch every time, you define a Master Stack once (e.g., "Postgres 16", "Node.js App") and reuse it across multiple projects.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-xl p-5 text-slate-300 font-mono text-xs overflow-x-auto">
+                        <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-2">
+                            <span class="text-slate-400">Example: docker-compose.yml template</span>
+                            <span class="bg-indigo-500 text-white px-2 py-0.5 rounded text-[10px]">Dynamic Variables</span>
+                        </div>
+                        <pre>services:
+  <span class="text-indigo-400">${SERVICE_NAME}</span>:
+    image: postgres:<span class="text-indigo-400">${DB_VERSION}</span>
+    environment:
+      POSTGRES_PASSWORD: <span class="text-indigo-400">${DB_PASSWORD}</span>
+    volumes:
+      - <span class="text-indigo-400">${SERVICE_NAME}</span>_data:/var/lib/postgresql/data</pre>
+                    </div>
+                    <p class="text-xs text-slate-500">Variables like <code class="bg-slate-100 px-1 rounded">${DB_PASSWORD}</code> will be converted into input fields when a user deploys this stack.</p>
+                </div>
+            </section>
+
+            {{-- 4. SERVICES & DEPLOYMENT --}}
+            <section id="services" class="scroll-mt-24">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">4. Services & Deployment</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Git Deployment --}}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="p-2 bg-orange-50 rounded-lg text-orange-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></div>
+                            <h4 class="font-bold text-slate-800">Application (Git)</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Connect your GitHub/GitLab repository. Keystone will pull the code, build the Docker image, and deploy it.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-1 ml-1">
+                            <li class="flex items-center gap-2"><svg class="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Requires Repo URL (HTTPS)</li>
+                            <li class="flex items-center gap-2"><svg class="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Specify Branch (e.g., main)</li>
+                        </ul>
+                    </div>
+
+                    {{-- Database Service --}}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="p-2 bg-blue-50 rounded-lg text-blue-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg></div>
+                            <h4 class="font-bold text-slate-800">Database & Cache</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            Deploy pre-configured images like MySQL, Postgres, or Redis using Stack Templates.
+                        </p>
+                        <ul class="text-xs text-slate-500 space-y-1 ml-1">
+                            <li class="flex items-center gap-2"><svg class="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Configure Password/User via ENV</li>
+                            <li class="flex items-center gap-2"><svg class="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Persistent Volumes managed auto</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            {{-- 5. CONSOLE & LOGS --}}
+            <section id="tools" class="scroll-mt-24">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-10 w-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">5. Console & Live Logs</h2>
+                </div>
+
+                <div class="bg-slate-900 rounded-2xl p-1 shadow-sm overflow-hidden">
+                    <div class="flex bg-slate-800/50 px-4 py-2 text-xs font-mono text-slate-400 border-b border-slate-700 justify-between">
+                        <span>root@container:/var/www/html</span>
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                        </div>
+                    </div>
+                    <div class="p-6 font-mono text-sm text-slate-300 space-y-2">
+                        <p class="opacity-50"># You can run artisan/npm commands directly</p>
+                        <p><span class="text-emerald-400">$</span> php artisan migrate --force</p>
+                        <p class="text-slate-400">Migrating: 2024_01_01_000000_create_users_table</p>
+                        <p class="text-emerald-400">Migrated:  2024_01_01_000000_create_users_table (32ms)</p>
+                        <p><span class="text-emerald-400">$</span> <span class="animate-pulse">_</span></p>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl">
+                        <div class="p-2 bg-slate-100 rounded text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 011.414.586l4 4a1 1 0 01.586 1.414V19a2 2 0 01-2 2z" /></svg></div>
                         <div>
-                            <h4 class="font-bold text-emerald-900 text-sm">Production</h4>
-                            <p class="text-xs text-emerald-700 mt-1 leading-relaxed">
-                                Lingkungan utama untuk user. Gunakan server performa tinggi.
-                            </p>
+                            <h5 class="font-bold text-slate-800 text-sm">Live Logs</h5>
+                            <p class="text-xs text-slate-500">Real-time container output stream</p>
                         </div>
                     </div>
-                    <div class="border border-amber-200 bg-amber-50/50 rounded-xl p-4 flex items-start gap-4 hover:shadow-md transition">
-                        <div class="bg-white p-2 rounded-lg shadow-sm text-amber-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                            </svg>
-                        </div>
+                    <div class="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl">
+                        <div class="p-2 bg-slate-100 rounded text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
                         <div>
-                            <h4 class="font-bold text-amber-900 text-sm">Staging / Test</h4>
-                            <p class="text-xs text-amber-700 mt-1 leading-relaxed">
-                                Tempat uji coba fitur baru. Bisa menggunakan server kecil (VPS murah).
-                            </p>
+                            <h5 class="font-bold text-slate-800 text-sm">Terminal</h5>
+                            <p class="text-xs text-slate-500">Execute commands inside container</p>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="prose prose-slate text-sm max-w-none text-slate-600">
-                    <p>Project mengelompokkan layanan aplikasi Anda. Pastikan Anda memilih Environment yang tepat saat membuat project baru.</p>
-                </div>
-            </div>
-
-            {{-- SECTION 3: SERVICES --}}
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 scroll-mt-24" id="services">
+            {{-- 6. USER ROLES --}}
+            <section id="users" class="scroll-mt-24">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="h-10 w-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
+                    <div class="h-10 w-10 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-lg shadow-violet-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     </div>
-                    <h2 class="text-xl font-bold text-slate-900">3. Deploying Services</h2>
+                    <h2 class="text-xl font-bold text-slate-800">6. Team Roles & Access</h2>
                 </div>
 
-                {{-- INFOGRAFIS 3: DEPLOYMENT PIPELINE --}}
-                <div class="relative mb-8 mt-2">
-                    <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 rounded-full z-0"></div>
-                    <div class="grid grid-cols-4 gap-2 relative z-10">
-                        {{-- Step 1 --}}
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold border-4 border-white shadow-sm">1</div>
-                            <span class="text-[10px] font-bold text-slate-800 mt-2 uppercase tracking-wide">Select Stack</span>
-                        </div>
-                        {{-- Step 2 --}}
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold border-4 border-white shadow-sm">2</div>
-                            <span class="text-[10px] font-bold text-slate-800 mt-2 uppercase tracking-wide">Config Port</span>
-                        </div>
-                        {{-- Step 3 --}}
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold border-4 border-white shadow-sm ring-2 ring-indigo-100">3</div>
-                            <span class="text-[10px] font-bold text-indigo-700 mt-2 uppercase tracking-wide">Deploy</span>
-                        </div>
-                        {{-- Step 4 --}}
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold border-4 border-white shadow-sm">4</div>
-                            <span class="text-[10px] font-bold text-emerald-700 mt-2 uppercase tracking-wide">Live</span>
-                        </div>
-                    </div>
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100 text-slate-500 uppercase text-[10px]">
+                            <tr>
+                                <th class="px-6 py-4 font-bold">Role</th>
+                                <th class="px-6 py-4 font-bold">Manage Servers</th>
+                                <th class="px-6 py-4 font-bold">Deploy Apps</th>
+                                <th class="px-6 py-4 font-bold">Manage Users</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-100">System Admin</span>
+                                </td>
+                                <td class="px-6 py-4 text-emerald-600 font-bold">✓ Full</td>
+                                <td class="px-6 py-4 text-emerald-600 font-bold">✓ Full</td>
+                                <td class="px-6 py-4 text-emerald-600 font-bold">✓ Full</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">Developer</span>
+                                </td>
+                                <td class="px-6 py-4 text-slate-400">View Only</td>
+                                <td class="px-6 py-4 text-emerald-600 font-bold">✓ Deploy & Logs</td>
+                                <td class="px-6 py-4 text-slate-400">No Access</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-50 text-orange-700 border border-orange-100">QA / Viewer</span>
+                                </td>
+                                <td class="px-6 py-4 text-slate-400">View Only</td>
+                                <td class="px-6 py-4 text-slate-400">View Logs Only</td>
+                                <td class="px-6 py-4 text-slate-400">No Access</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="prose prose-slate text-sm max-w-none text-slate-600">
-                    <p>Service adalah unit aplikasi yang berjalan di Docker (Nginx, MySQL, Redis, dll).</p>
-                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mt-4 rounded-r-lg">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                            </svg>
-                            <div>
-                                <p class="text-amber-800 font-bold text-xs">PENTING: Redeploy</p>
-                                <p class="text-amber-700 text-xs mt-1">
-                                    Jika Anda mengubah Environment Variables (ENV) setelah service berjalan, tekan tombol <strong>Redeploy</strong> agar perubahan diterapkan.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- SECTION 4: MONITORING --}}
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 scroll-mt-24" id="monitoring">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-900">4. Monitoring & Logs</h2>
-                </div>
-
-                {{-- INFOGRAFIS 4: FEATURES --}}
-                <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div class="flex-1 bg-slate-900 rounded-xl p-4 text-white relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-3 opacity-10">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <h4 class="font-mono text-sm font-bold text-emerald-400 mb-1">Live Logs</h4>
-                        <p class="text-xs text-slate-400 mb-3">Streaming real-time dari container.</p>
-                        <div class="bg-black/50 rounded p-2 font-mono text-[10px] text-slate-300 border border-white/10">
-                            > npm start<br>
-                            > Server running on :80<br>
-                            <span class="animate-pulse">_</span>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 bg-white border border-slate-200 rounded-xl p-4 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-3 opacity-5 text-rose-600">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                            </svg>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-sm mb-1">Health Check</h4>
-                        <p class="text-xs text-slate-500 mb-3">Sync status manual dengan server.</p>
-                        <div class="flex items-center gap-2">
-                            <span class="bg-slate-100 p-1 rounded-full"><svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                </svg></span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">RUNNING</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="prose prose-slate text-sm max-w-none text-slate-600">
-                    <p>Keystone menyediakan fitur monitoring agar Anda tidak buta terhadap kondisi server.</p>
-                </div>
-            </div>
+            </section>
 
         </div>
     </div>

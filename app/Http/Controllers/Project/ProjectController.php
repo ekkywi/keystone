@@ -21,6 +21,11 @@ class ProjectController extends Controller
         return view('projects.index', compact('projects'));
     }
 
+    public function create()
+    {
+        return view('projects.create');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -38,6 +43,33 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.show', $project)
             ->with('success', 'Project created successfully. You can now add services.');
+    }
+
+    public function edit(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('projects.edit', compact('project'));
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'environment' => 'required|in:local,staging,production',
+        ]);
+
+        $project->update($validated);
+
+        return redirect()->route('projects.show', $project)
+            ->with('success', 'Project configuration updated.');
     }
 
     public function show(Project $project)

@@ -21,6 +21,7 @@ class ProjectService extends Model
         'last_deployed_at',
         'repository_url',
         'branch',
+        'deployment_error'
 
     ];
 

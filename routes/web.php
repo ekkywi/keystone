@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
 
     // Servers
     Route::resource('servers', ServerController::class);
+    Route::post('/servers/{server}/test-connection', [ServerController::class, 'testConnection'])->name('servers.test-connection');
 
     // Stacks
     Route::resource('stacks', StackController::class);
@@ -53,6 +54,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/services/{service}/stop', [ServiceOperationController::class, 'stop'])->name('services.stop');
         Route::get('/services/{service}/logs', [ServiceOperationController::class, 'logs'])->name('services.logs');
         Route::post('/services/{service}/refresh-status', [ServiceOperationController::class, 'refreshStatus'])->name('services.refresh-status');
+        Route::post('/services/{service}/execute', [ServiceOperationController::class, 'executeCommand'])
+            ->name('services.execute');
     });
 
     // Help

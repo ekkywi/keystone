@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Server;
+use App\Services\SshService;
+use Illuminate\Http\JsonResponse;
 
 class ServerController extends Controller
 {
@@ -99,5 +101,35 @@ class ServerController extends Controller
         $server->delete();
 
         return redirect()->route('servers.index')->with('success', 'Server removed from inventory');
+    }
+
+    public function testConnection(Server $server): JsonResponse
+    {
+        try {
+            $ssh = new SshService();
+            $ssh->connect($server);
+
+            // Jalankan beberapa command diagnostic
+            $user = trim($ssh->execute('whoami'));
+            $docker = trim($ssh->execute('docker -v'));
+            $disk = trim($ssh->execute("df -h / | tail -1 | awk '{print $5}'")); // Cek penggunaan disk root
+            $uptime = trim($ssh->execute("uptime -p"));
+
+            return response()->json([
+                'status' => 'success',
+                'server_name' => $server->name,
+                'details' => [
+                    'User' => $user,
+                    'Docker Version' => $docker,
+                    'Disk Usage' => $disk,
+                    'Uptime' => $uptime,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
