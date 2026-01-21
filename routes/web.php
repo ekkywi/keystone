@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Server;
 use App\Services\SshService;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PublicRequestController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Infrastructure\ServerController;
@@ -21,6 +22,8 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.process');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/request-access', [PublicRequestController::class, 'create'])->name('request.create');
+Route::post('/request-access', [PublicRequestController::class, 'store'])->name('request.store');
 
 // --- AUTHENTICATED ROUTES (Must Login) ---
 Route::middleware('auth')->group(function () {
@@ -60,22 +63,4 @@ Route::middleware('auth')->group(function () {
 
     // Help
     Route::get('/help', [HelpController::class, 'index'])->name('help.index');
-
-    Route::get('/test-ssh', function () {
-        $server = Server::first();
-
-        if (!$server) return "No server found in DB.";
-
-        try {
-            $ssh = new SshService();
-            $ssh->connect($server);
-
-            $user = $ssh->execute('whoami');
-            $docker = $ssh->execute('docker -v');
-
-            return "Connected to <b>{$server->name}</b>!<br>User: {$user}<br>Docker: {$docker}";
-        } catch (\Exception $e) {
-            return "Error: " . $e->getMessage();
-        }
-    });
 });
