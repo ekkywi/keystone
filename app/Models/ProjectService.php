@@ -18,7 +18,10 @@ class ProjectService extends Model
         'input_variables',
         'status',
         'public_port',
-        'last_deployed_at'
+        'last_deployed_at',
+        'repository_url',
+        'branch',
+
     ];
 
     protected $casts = [

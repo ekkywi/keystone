@@ -20,6 +20,7 @@
             scrollbar-width: none;
         }
     </style>
+    @stack("styles")
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans antialiased">

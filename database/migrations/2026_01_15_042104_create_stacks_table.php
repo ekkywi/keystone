@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('type')->default('app');
             $table->text('raw_compose_template');
+            $table->text('build_dockerfile')->nullable();
+            $table->text('build_script')->nullable();
             $table->boolean('is_active')->default('true');
             $table->timestamps();
         });

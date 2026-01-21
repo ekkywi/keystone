@@ -15,6 +15,7 @@
                 @csrf
                 @method("PUT")
 
+                {{-- A. MAIN CONFIG --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Service Name</label>
@@ -27,8 +28,32 @@
                     </div>
                 </div>
 
+                {{-- B. [FIX] SOURCE CODE CONFIGURATION --}}
+                {{-- Hanya muncul jika Stack Type adalah 'application' --}}
+                @if ($service->stack->type === "application")
+                    <div class="border-t border-slate-100 my-6 pt-6">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </svg>
+                            Source Code Configuration
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-5 rounded-lg border border-slate-200">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Git Repository URL</label>
+                                <input class="w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-4 py-2" name="repository_url" placeholder="https://github.com/user/repo.git" required type="url" value="{{ old("repository_url", $service->repository_url) }}">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Branch</label>
+                                <input class="w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-4 py-2" name="branch" required type="text" value="{{ old("branch", $service->branch ?? "main") }}">
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="border-t border-slate-100 my-6"></div>
 
+                {{-- C. ENV VARIABLES --}}
                 <div>
                     <div class="flex items-center gap-2 mb-4">
                         <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
@@ -46,9 +71,7 @@
 
                                 @php
                                     $savedValue = $service->input_variables[$var->env_key] ?? null;
-
                                     $defaultValue = $var->default_value;
-
                                     $finalValue = $savedValue ?? ($defaultValue ?? "");
                                 @endphp
 
@@ -64,6 +87,7 @@
                             Save Changes
                         </button>
                     </div>
+                </div>
             </form>
         </div>
     </div>

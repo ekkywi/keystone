@@ -46,10 +46,8 @@
                     <div class="space-y-1">
                         <label class="block text-sm font-medium text-slate-700">Service Type</label>
                         <select class="block w-full rounded-lg border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm px-4 py-2" name="type">
-                            <option {{ $stack->type == "database" ? "selected" : "" }} value="database">Database (Stateful)</option>
-                            <option {{ $stack->type == "app" ? "selected" : "" }} value="app">Application (Stateless)</option>
-                            <option {{ $stack->type == "cache" ? "selected" : "" }} value="cache">Cache / Key-Value</option>
-                            <option {{ $stack->type == "worker" ? "selected" : "" }} value="worker">Worker / Job</option>
+                            <option {{ $stack->type == "service" ? "selected" : "" }} value="service">Service</option>
+                            <option {{ $stack->type == "application" ? "selected" : "" }} value="application">Application</option>
                         </select>
                     </div>
                     <div class="col-span-2 space-y-1">

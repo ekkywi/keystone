@@ -32,10 +32,14 @@ class ProjectServiceController extends Controller
             'name' => 'required|string|max:255',
             'stack_id' => 'required|exists:stacks,id',
             'server_id' => 'required|exists:servers,id',
+            // Opsional: Anda bisa menambah validasi jika stack type = application
+            'repository_url' => 'nullable|url',
+            'branch' => 'nullable|string',
         ]);
 
         $inputVariables = $request->input('vars', []);
 
+        // Logic deteksi port (tetap sama)
         $detectedPort = null;
         if (isset($inputVariables['PUBLIC_PORT'])) {
             $detectedPort = $inputVariables['PUBLIC_PORT'];
@@ -43,6 +47,7 @@ class ProjectServiceController extends Controller
             $detectedPort = $inputVariables['PORT'];
         }
 
+        // --- [FIX] SIMPAN DATA GIT DI SINI ---
         $project->services()->create([
             'name' => $request->name,
             'stack_id' => $request->stack_id,
@@ -50,6 +55,10 @@ class ProjectServiceController extends Controller
             'input_variables' => $inputVariables,
             'public_port' => $detectedPort,
             'status' => 'stopped',
+
+            // TAMBAHKAN DUA BARIS INI:
+            'repository_url' => $request->input('repository_url'),
+            'branch' => $request->input('branch', 'main'), // Default main jika kosong
         ]);
 
         return redirect()->route('projects.show', $project)
@@ -71,6 +80,8 @@ class ProjectServiceController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'repository_url' => 'nullable|url',
+            'branch' => 'nullable|string',
         ]);
 
         $inputVariables = $request->input('vars', []);
@@ -82,10 +93,15 @@ class ProjectServiceController extends Controller
             $detectedPort = $inputVariables['PORT'];
         }
 
+        // --- [FIX] UPDATE DATA GIT DI SINI ---
         $service->update([
             'name' => $request->name,
             'input_variables' => $inputVariables,
             'public_port' => $detectedPort ?? $service->public_port,
+
+            // TAMBAHKAN DUA BARIS INI:
+            'repository_url' => $request->input('repository_url'),
+            'branch' => $request->input('branch'),
         ]);
 
         return redirect()->route('projects.show', $service->project)
@@ -97,14 +113,12 @@ class ProjectServiceController extends Controller
         if ($service->project->user_id !== Auth::id()) abort(403);
 
         try {
-            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', str_replace(' ', '-', strtolower($service->name)));
             $remotePath = "/var/www/keystone/{$service->project->id}/{$service->id}";
 
             try {
                 $ssh->connect($service->server);
-
+                // Gunakan flag -v untuk menghapus volume juga agar bersih total
                 $ssh->execute("cd {$remotePath} && docker compose down -v");
-
                 $ssh->removeDirectory($remotePath);
             } catch (\Exception $e) {
                 Log::warning("Failed to cleanup server files for {$service->name}: " . $e->getMessage());

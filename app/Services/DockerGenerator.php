@@ -8,18 +8,22 @@ class DockerGenerator
 {
     public function generateComposeFile(ProjectService $service): string
     {
-        $rawYaml = $service->stack->raw_compose_template;
+        $template = $service->stack->raw_compose_template;
+        $networkName = "keystone-p{$service->project_id}-net";
+        $safeServiceName = preg_replace('/[^a-z0-9_]/', '', strtolower($service->name));
+        $replacements = [
+            '${NETWORK_NAME}' => $networkName,
+            '${SERVICE_NAME}' => $safeServiceName,
+        ];
 
-        $userVariables = $service->input_variables ?? [];
+        $userVars = $service->input_variables ?? [];
 
-        $finalYaml = $rawYaml;
-
-        foreach ($userVariables as $key => $value) {
-            $placeholder = '${' . $key . '}';
-
-            $finalYaml = str_replace($placeholder, $value, $finalYaml);
+        foreach ($service->stack->variables as $var) {
+            $key = '${' . $var->env_key . '}';
+            $value = $userVars[$var->env_key] ?? $var->default_value ?? '';
+            $replacements[$key] = $value;
         }
 
-        return $finalYaml;
+        return strtr($template, $replacements);
     }
 }

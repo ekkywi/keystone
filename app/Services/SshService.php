@@ -32,10 +32,18 @@ class SshService
     public function execute($command)
     {
         if (!$this->ssh) {
-            throw new Exception("No active SSH connection.");
+            throw new \Exception("SSH connection not established.");
         }
 
-        return $this->ssh->exec($command);
+        $this->ssh->setTimeout(600);
+
+        $output = $this->ssh->exec($command);
+
+        if ($this->ssh->getExitStatus() !== 0) {
+            throw new \Exception("Command failed: " . $output);
+        }
+
+        return $output;
     }
 
     public function uploadFile($remotePath, $content)
