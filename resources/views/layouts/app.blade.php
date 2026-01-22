@@ -1,29 +1,35 @@
 <!DOCTYPE html>
+
+@php
+    // Hitung request milik user sendiri (untuk menu Support)
+    $myPendingCount = \App\Models\AccessRequest::where("email", Auth::user()->email)
+        ->where("status", "pending")
+        ->count();
+
+    // Hitung SEMUA request pending (untuk Admin)
+    $totalSystemPending = \App\Models\AccessRequest::where("status", "pending")->count();
+@endphp
+
 <html class="h-full bg-slate-50" lang="{{ str_replace("_", "-", app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    {{-- 1. DYNAMIC TITLE --}}
-    {{-- Format: "Dashboard - Keystone" atau "Create Service - Keystone" --}}
     <title>@yield("title", "Console") - {{ config("app.name", "Keystone") }}</title>
 
     @vite(["resources/css/app.css", "resources/js/app.js"])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- 2. FONT POPPINS (Ganti Inter jadi Poppins) --}}
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 3. TERAPKAN FONT POPPINS */
         body {
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Custom Scrollbar Modern */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -42,7 +48,6 @@
             background: #94a3b8;
         }
 
-        /* Hide Scrollbar Utilities */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -52,7 +57,6 @@
             scrollbar-width: none;
         }
 
-        /* Dot Pattern Background */
         .bg-grid-pattern {
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
@@ -63,7 +67,6 @@
 
 <body class="h-full text-slate-600 antialiased selection:bg-indigo-500 selection:text-white relative overflow-hidden">
 
-    {{-- AMBIENT BACKGROUND --}}
     <div class="fixed inset-0 z-[-1] bg-grid-pattern opacity-40 pointer-events-none"></div>
     <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none"></div>
@@ -86,7 +89,7 @@
                         <h1 class="text-sm font-bold text-white tracking-wide">KEYSTONE</h1>
                         <div class="flex items-center gap-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-[10px] font-medium text-slate-500">Internal Development Platform</span>
+                            <span class="text-[10px] font-medium text-slate-500">Infrastructure Core</span>
                         </div>
                     </div>
                 </a>
@@ -95,16 +98,18 @@
             {{-- NAV LINKS --}}
             <nav class="flex-1 px-4 py-6 space-y-8 overflow-y-auto no-scrollbar">
 
-                {{-- Platform --}}
+                {{-- GROUP 1: PLATFORM (User Biasa) --}}
                 <div>
                     <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Platform</h3>
                     <div class="space-y-1">
+                        {{-- Dashboard User --}}
                         <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("dashboard") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("dashboard") }}">
                             <svg class="w-5 h-5 transition-colors {{ request()->routeIs("dashboard") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
                             Dashboard
                         </a>
+                        {{-- Projects --}}
                         <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("projects.*") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("projects.index") }}">
                             <svg class="w-5 h-5 transition-colors {{ request()->routeIs("projects.*") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
@@ -114,7 +119,7 @@
                     </div>
                 </div>
 
-                {{-- Infrastructure --}}
+                {{-- GROUP 2: INFRASTRUCTURE (User Biasa) --}}
                 <div>
                     <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Infrastructure</h3>
                     <div class="space-y-1">
@@ -133,18 +138,73 @@
                     </div>
                 </div>
 
-                {{-- System --}}
+                {{-- GROUP 3: SUPPORT (Tersedia untuk Semua User) --}}
                 <div>
-                    <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">System</h3>
+                    <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Support</h3>
                     <div class="space-y-1">
-                        <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("users.*") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("users.index") }}">
-                            <svg class="w-5 h-5 transition-colors {{ request()->routeIs("users.*") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+
+                        {{-- REQUEST CENTER DENGAN BADGE --}}
+                        <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("internal.requests.*") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("internal.requests.index") }}">
+
+                            <svg class="w-5 h-5 transition-colors {{ request()->routeIs("internal.requests.*") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0112.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
-                            Team Members
+
+                            <span class="flex-1">Request Center</span>
+
+                            {{-- BADGE NOTIFIKASI --}}
+                            @if ($myPendingCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-full animate-pulse">
+                                    {{ $myPendingCount }}
+                                </span>
+                            @endif
                         </a>
+
                     </div>
                 </div>
+
+                {{-- GROUP 4: ADMINISTRATION (Hanya Muncul untuk SYSTEM ADMINISTRATOR) --}}
+                @if (Auth::user()->role === "system_administrator")
+                    <div>
+                        <h3 class="px-2 text-[10px] font-bold text-amber-500/80 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span>Administration</span>
+
+                            {{-- LINGKARAN HANYA MUNCUL JIKA ADA REQUEST YANG BELUM DIPROSES --}}
+                            @if ($totalSystemPending > 0)
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            @endif
+                        </h3>
+                        <div class="space-y-1">
+
+                            {{-- 1. COMMAND CENTER (Admin Dashboard) --}}
+                            <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("admin.dashboard") ? "bg-amber-500/10 text-white shadow-[0_0_20px_rgba(245,158,11,0.1)] ring-1 ring-amber-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("admin.dashboard") }}">
+
+                                <svg class="w-5 h-5 transition-colors {{ request()->routeIs("admin.dashboard") ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                </svg>
+
+                                <span class="flex-1">Command Center</span>
+
+                                {{-- BADGE ANGKA UNTUK ADMIN --}}
+                                @if ($totalSystemPending > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-amber-500 rounded-full shadow-lg shadow-amber-500/20">
+                                        {{ $totalSystemPending }}
+                                    </span>
+                                @endif
+                            </a>
+
+                            {{-- 2. TEAM MEMBERS (Users) --}}
+                            <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("admin.users.*") ? "bg-amber-500/10 text-white shadow-[0_0_20px_rgba(245,158,11,0.1)] ring-1 ring-amber-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("admin.users.index") }}">
+                                <svg class="w-5 h-5 transition-colors {{ request()->routeIs("admin.users.*") ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                </svg>
+                                Team Members
+                            </a>
+
+                        </div>
+                    </div>
+                @endif
+
             </nav>
 
             {{-- USER PROFILE --}}
@@ -155,7 +215,10 @@
                     </div>
                     <div class="overflow-hidden">
                         <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>
-                        <p class="text-[10px] text-slate-500 truncate uppercase tracking-wider font-bold">{{ str_replace("_", " ", Auth::user()->role ?? "Admin") }}</p>
+                        <p class="text-[10px] text-slate-500 truncate uppercase tracking-wider font-bold">
+                            {{-- Format Role Name (replace underscore) --}}
+                            {{ ucwords(str_replace("_", " ", Auth::user()->role)) }}
+                        </p>
                     </div>
                 </div>
 
@@ -173,8 +236,6 @@
 
         {{-- MAIN CONTENT --}}
         <main class="flex-1 flex flex-col h-full overflow-hidden relative z-10">
-
-            {{-- HEADER GLASS --}}
             <header class="h-16 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-20">
                 <div class="flex-1">
                     @hasSection("header")
@@ -185,14 +246,13 @@
                 </div>
             </header>
 
-            {{-- CONTENT SCROLL --}}
             <div class="flex-1 overflow-y-auto p-8 no-scrollbar scroll-smooth">
                 @yield("content")
             </div>
         </main>
     </div>
 
-    {{-- SCRIPTS --}}
+    {{-- SCRIPTS (SweetAlert Toast) --}}
     <script>
         const Toast = Swal.mixin({
             toast: true,

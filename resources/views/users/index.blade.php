@@ -10,7 +10,7 @@
             <p class="text-sm text-slate-500 font-medium">Manage access & roles</p>
         </div>
 
-        <a class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/20 flex items-center gap-2 transform active:scale-95 duration-200" href="{{ route("users.create") }}">
+        <a class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/20 flex items-center gap-2 transform active:scale-95 duration-200" href="{{ route("admin.users.create") }}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
             </svg>
@@ -24,18 +24,12 @@
 
         {{-- SEARCH BAR --}}
         <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 transition-shadow focus-within:shadow-md focus-within:border-indigo-200">
-
-            {{-- Icon --}}
             <div class="pl-2.5 text-slate-400 shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                 </svg>
             </div>
-
-            {{-- Input (Gunakan flex-1 agar mengisi ruang sisa, bukan w-full) --}}
             <input class="flex-1 border-0 focus:ring-0 text-sm text-slate-600 placeholder-slate-400 bg-transparent h-10" placeholder="Search by name or email address..." type="text">
-
-            {{-- Badge Count (Gunakan whitespace-nowrap agar tidak turun baris) --}}
             <div class="pr-1.5 shrink-0">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 whitespace-nowrap">
                     <span>{{ $users->count() }}</span>
@@ -49,7 +43,9 @@
             <table class="min-w-full divide-y divide-slate-100">
                 <thead class="bg-slate-50/50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">User Profile</th>
+                        {{-- SESUAIKAN JUMLAH TH DENGAN TD (6 KOLOM) --}}
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Member</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Department</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Role</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Joined</th>
@@ -60,7 +56,7 @@
                     @foreach ($users as $user)
                         <tr class="hover:bg-slate-50/80 transition-colors group">
 
-                            {{-- Profile --}}
+                            {{-- 1. Member Profile --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-4">
                                     <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-200">
@@ -73,7 +69,14 @@
                                 </div>
                             </td>
 
-                            {{-- Role --}}
+                            {{-- 2. Department (Hanya menampilkan Dept) --}}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-medium text-slate-600">
+                                    {{ $user->department ?? "N/A" }}
+                                </span>
+                            </td>
+
+                            {{-- 3. Role --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $roleStyles = [
@@ -89,39 +92,40 @@
                                 </span>
                             </td>
 
-                            {{-- Status Toggle --}}
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if (auth()->id() === $user->id)
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 opacity-70 cursor-not-allowed" title="You cannot deactivate yourself">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
-                                    </span>
-                                @else
-                                    <form action="{{ route("users.toggle-status", $user->id) }}" id="status-form-{{ $user->id }}" method="POST">
-                                        @csrf @method("PATCH")
-                                        <button class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 {{ $user->is_active ? "bg-emerald-500" : "bg-slate-200" }}" onclick="confirmStatusChange('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_active ? "true" : "false" }})" type="button">
-                                            <span class="sr-only">Use setting</span>
-                                            <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $user->is_active ? "translate-x-5" : "translate-x-0" }}"></span>
-                                        </button>
-                                    </form>
-                                @endif
+                            {{-- 4. Status Toggle --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <div class="flex items-center">
+                                    @if (auth()->id() === $user->id)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 opacity-70 cursor-not-allowed" title="You cannot deactivate yourself">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                        </span>
+                                    @else
+                                        <form action="{{ route("admin.users.toggle-status", $user->id) }}" id="status-form-{{ $user->id }}" method="POST">
+                                            @csrf @method("PATCH")
+                                            <button class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 {{ $user->status === 'active' ? "bg-emerald-500" : "bg-slate-200" }}" onclick="confirmStatusChange('{{ $user->id }}', '{{ $user->name }}', {{ $user->status === 'active' ? "true" : "false" }})" type="button">
+                                                <span aria-hidden="true" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $user->status === 'active' ? "translate-x-5" : "translate-x-0" }}"></span>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
 
-                            {{-- Date --}}
-                            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
+                            {{-- 5. Joined Date --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-500 font-medium">
                                 {{ $user->created_at->format("M d, Y") }}
                             </td>
 
-                            {{-- Actions --}}
+                            {{-- 6. Actions --}}
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <a class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" href="{{ route("users.edit", $user) }}" title="Edit">
+                                    <a class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" href="{{ route("admin.users.edit", $user) }}" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                         </svg>
                                     </a>
 
                                     @if (auth()->id() !== $user->id)
-                                        <form action="{{ route("users.destroy", $user->id) }}" id="delete-form-{{ $user->id }}" method="POST">
+                                        <form action="{{ route("admin.users.destroy", $user->id) }}" id="delete-form-{{ $user->id }}" method="POST">
                                             @csrf @method("DELETE")
                                             <button class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" onclick="confirmDelete('{{ $user->id }}', '{{ $user->name }}')" type="button">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,6 +152,7 @@
 @endsection
 
 @push("scripts")
+    {{-- Scripts tetap sama seperti kode Anda sebelumnya --}}
     <script>
         function confirmDelete(userId, userName) {
             Swal.fire({

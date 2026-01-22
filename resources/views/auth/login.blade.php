@@ -1,5 +1,7 @@
 @extends("layouts.guest")
 
+@section("title", "Login")
+
 @push("styles")
     {{-- Import Font Poppins --}}
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -183,7 +185,7 @@
                             </div>
                             <span class="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Remember me</span>
                         </label>
-                        <a class="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline transition-colors" href="#">Forgot password?</a>
+                        <a class="text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:underline transition-colors" href="{{ route("request.create") }}">Forgot password?</a>
                     </div>
 
                     {{-- Submit Button --}}
@@ -216,7 +218,6 @@
 @endsection
 
 @push("scripts")
-    {{-- SweetAlert2 untuk Error --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -272,6 +273,26 @@
                 title: 'Authentication Failed',
                 html: `<ul class="list-disc pl-4 text-left">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>`
             })
+        </script>
+    @endif
+
+    @if (session("success"))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Request Submitted!',
+                text: "{{ session("success") }}",
+                confirmButtonColor: '#0f172a',
+                confirmButtonText: 'Understood',
+                background: '#fff',
+                color: '#334155',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl px-6 py-2.5 font-bold'
+                },
+                timer: 8000,
+                timerProgressBar: true
+            });
         </script>
     @endif
 @endpush

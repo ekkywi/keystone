@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Keystone IDP - Console Access</title>
+    <title>@yield("title", "Console") - {{ config("app.name", "Keystone") }}</title>
 
     @vite(["resources/css/app.css", "resources/js/app.js"])
 

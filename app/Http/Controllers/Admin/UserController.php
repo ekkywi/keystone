@@ -28,6 +28,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:system_administrator,developer,quality_assurance',
+            'department' => 'nullable|string|max:100',
         ]);
 
         User::create([
@@ -35,11 +36,12 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'department' => $request->department,
             'email_verified_at' => now(),
 
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
     public function show(string $id)
@@ -63,12 +65,14 @@ class UserController extends Controller
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|in:system_administrator,developer,quality_assurance',
+            'department' => 'nullable|string|max:100',
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
+            'department' => $request->department,
         ];
 
         if ($request->filled('password')) {
@@ -77,7 +81,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
     }
 
     public function destroy($id)
@@ -89,7 +93,7 @@ class UserController extends Controller
         }
 
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
     }
 
     public function toggleStatus($id)
