@@ -20,6 +20,9 @@ use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Project\ProjectServiceController;
 use App\Http\Controllers\Project\ServiceOperationController;
 
+// Profile and Settings
+use App\Http\Controllers\Settings\ProfileController;
+
 // Admin Zone
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
@@ -91,6 +94,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-requests', [AccessRequestController::class, 'index'])->name('internal.requests.index');
     Route::get('/my-requests/create', [AccessRequestController::class, 'createInternal'])->name('internal.requests.create');
     Route::post('/my-requests', [AccessRequestController::class, 'storeInternal'])->name('internal.requests.store');
+
+    // --- Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 

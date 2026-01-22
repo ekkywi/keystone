@@ -94,7 +94,7 @@
 
                             {{-- 4. Status Toggle --}}
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <div class="flex items-center">
+                                <div class="flex items-center justify-center">
                                     @if (auth()->id() === $user->id)
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 opacity-70 cursor-not-allowed" title="You cannot deactivate yourself">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
@@ -102,8 +102,9 @@
                                     @else
                                         <form action="{{ route("admin.users.toggle-status", $user->id) }}" id="status-form-{{ $user->id }}" method="POST">
                                             @csrf @method("PATCH")
-                                            <button class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 {{ $user->status === 'active' ? "bg-emerald-500" : "bg-slate-200" }}" onclick="confirmStatusChange('{{ $user->id }}', '{{ $user->name }}', {{ $user->status === 'active' ? "true" : "false" }})" type="button">
-                                                <span aria-hidden="true" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $user->status === 'active' ? "translate-x-5" : "translate-x-0" }}"></span>
+                                            {{-- PERBAIKAN: Gunakan $user->is_active (boolean) --}}
+                                            <button class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 {{ $user->is_active ? "bg-emerald-500" : "bg-slate-200" }}" onclick="confirmStatusChange('{{ $user->id }}', '{{ $user->name }}', {{ $user->is_active ? "true" : "false" }})" type="button">
+                                                <span aria-hidden="true" class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $user->is_active ? "translate-x-5" : "translate-x-0" }}"></span>
                                             </button>
                                         </form>
                                     @endif

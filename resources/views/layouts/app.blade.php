@@ -98,18 +98,16 @@
             {{-- NAV LINKS --}}
             <nav class="flex-1 px-4 py-6 space-y-8 overflow-y-auto no-scrollbar">
 
-                {{-- GROUP 1: PLATFORM (User Biasa) --}}
+                {{-- GROUP 1: PLATFORM --}}
                 <div>
                     <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Platform</h3>
                     <div class="space-y-1">
-                        {{-- Dashboard User --}}
                         <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("dashboard") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("dashboard") }}">
                             <svg class="w-5 h-5 transition-colors {{ request()->routeIs("dashboard") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
                             Dashboard
                         </a>
-                        {{-- Projects --}}
                         <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("projects.*") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("projects.index") }}">
                             <svg class="w-5 h-5 transition-colors {{ request()->routeIs("projects.*") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
@@ -119,7 +117,7 @@
                     </div>
                 </div>
 
-                {{-- GROUP 2: INFRASTRUCTURE (User Biasa) --}}
+                {{-- GROUP 2: INFRASTRUCTURE --}}
                 <div>
                     <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Infrastructure</h3>
                     <div class="space-y-1">
@@ -138,89 +136,70 @@
                     </div>
                 </div>
 
-                {{-- GROUP 3: SUPPORT (Tersedia untuk Semua User) --}}
+                {{-- GROUP 3: SUPPORT --}}
                 <div>
                     <h3 class="px-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-3">Support</h3>
                     <div class="space-y-1">
-
-                        {{-- REQUEST CENTER DENGAN BADGE --}}
                         <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("internal.requests.*") ? "bg-indigo-500/10 text-white shadow-[0_0_20px_rgba(99,102,241,0.1)] ring-1 ring-indigo-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("internal.requests.index") }}">
-
                             <svg class="w-5 h-5 transition-colors {{ request()->routeIs("internal.requests.*") ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0112.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                             </svg>
-
                             <span class="flex-1">Request Center</span>
-
-                            {{-- BADGE NOTIFIKASI --}}
                             @if ($myPendingCount > 0)
                                 <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-full animate-pulse">
                                     {{ $myPendingCount }}
                                 </span>
                             @endif
                         </a>
-
                     </div>
                 </div>
 
-                {{-- GROUP 4: ADMINISTRATION (Hanya Muncul untuk SYSTEM ADMINISTRATOR) --}}
+                {{-- GROUP 4: ADMINISTRATION --}}
                 @if (Auth::user()->role === "system_administrator")
                     <div>
                         <h3 class="px-2 text-[10px] font-bold text-amber-500/80 uppercase tracking-widest mb-3 flex items-center gap-2">
                             <span>Administration</span>
-
-                            {{-- LINGKARAN HANYA MUNCUL JIKA ADA REQUEST YANG BELUM DIPROSES --}}
                             @if ($totalSystemPending > 0)
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                             @endif
                         </h3>
                         <div class="space-y-1">
-
-                            {{-- 1. COMMAND CENTER (Admin Dashboard) --}}
                             <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("admin.dashboard") ? "bg-amber-500/10 text-white shadow-[0_0_20px_rgba(245,158,11,0.1)] ring-1 ring-amber-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("admin.dashboard") }}">
-
                                 <svg class="w-5 h-5 transition-colors {{ request()->routeIs("admin.dashboard") ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                 </svg>
-
                                 <span class="flex-1">Command Center</span>
-
-                                {{-- BADGE ANGKA UNTUK ADMIN --}}
                                 @if ($totalSystemPending > 0)
-                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-amber-500 rounded-full shadow-lg shadow-amber-500/20">
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-bold text-white bg-amber-500 rounded-full shadow-lg shadow-amber-500/20">
                                         {{ $totalSystemPending }}
                                     </span>
                                 @endif
                             </a>
-
-                            {{-- 2. TEAM MEMBERS (Users) --}}
                             <a class="group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs("admin.users.*") ? "bg-amber-500/10 text-white shadow-[0_0_20px_rgba(245,158,11,0.1)] ring-1 ring-amber-500/20" : "text-slate-400 hover:text-white hover:bg-white/5" }}" href="{{ route("admin.users.index") }}">
                                 <svg class="w-5 h-5 transition-colors {{ request()->routeIs("admin.users.*") ? "text-amber-500" : "text-slate-500 group-hover:text-slate-300" }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                 </svg>
                                 Team Members
                             </a>
-
                         </div>
                     </div>
                 @endif
-
             </nav>
 
-            {{-- USER PROFILE --}}
+            {{-- USER PROFILE SECTION (UPDATED) --}}
             <div class="p-4 border-t border-white/5 bg-[#080d19]">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-slate-700 to-slate-600 ring-1 ring-white/10 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                <a class="group flex items-center gap-3 mb-4 p-2 rounded-xl transition-all duration-200 hover:bg-white/5" href="{{ route("profile.edit") }}">
+                    <div class="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-tr from-slate-700 to-slate-600 ring-1 ring-white/10 flex items-center justify-center text-white font-bold text-sm shadow-inner group-hover:ring-indigo-500/50 transition-all">
                         {{ substr(Auth::user()->name ?? "U", 0, 1) }}
                     </div>
-                    <div class="overflow-hidden">
-                        <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>
-                        <p class="text-[10px] text-slate-500 truncate uppercase tracking-wider font-bold">
-                            {{-- Format Role Name (replace underscore) --}}
-                            {{ ucwords(str_replace("_", " ", Auth::user()->role)) }}
-                        </p>
+                    <div class="overflow-hidden flex-1">
+                        <p class="text-sm font-semibold text-white truncate group-hover:text-indigo-400 transition-colors">{{ Auth::user()->name }}</p>
+                        <p class="text-[10px] text-slate-500 truncate uppercase tracking-widest font-bold">Account Settings</p>
                     </div>
-                </div>
+                    <svg class="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                    </svg>
+                </a>
 
                 <form action="{{ route("logout") }}" method="POST">
                     @csrf
@@ -262,10 +241,6 @@
             timerProgressBar: true,
             background: '#ffffff',
             color: '#1e293b',
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            },
             customClass: {
                 popup: 'rounded-xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]',
                 title: 'text-sm font-bold',
@@ -280,7 +255,6 @@
                 text: "{{ session("success") }}"
             });
         @endif
-
         @if (session("error"))
             Toast.fire({
                 icon: 'error',
@@ -288,7 +262,6 @@
                 text: "{{ session("error") }}"
             });
         @endif
-
         @if ($errors->any())
             Toast.fire({
                 icon: 'error',
